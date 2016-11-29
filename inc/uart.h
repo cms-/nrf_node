@@ -9,7 +9,7 @@
 
 
 //void uart_receive(volatile void* data, int length);
-void Uart_send(volatile void* data, int length);
+void UartSend(volatile void* data, int length);
 
 // ******* uart_qtx_dma *******
 // Function that transfers a series of 8 bit values from 

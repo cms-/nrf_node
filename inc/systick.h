@@ -7,6 +7,10 @@
 
 #define BUFFERSIZE 64
 #define WORDBYTES 4
+#define RELOADTIME 47999
+
+extern volatile uint32_t TheTime;
+
 extern int32_t SerTXSize;
 extern int32_t SerTXDMA;
 extern int32_t SerTXIRQ;
@@ -37,7 +41,7 @@ extern fifo_t TestingFifo[1];
 struct event_t {
 	void(*managerFunction)(fifo_t*); // manager function is called with reference to fifo being managed
 	fifo_t *fifo; // pointer to FIFO buffer
-	uint32_t interval; // how often the manager function will be called in microseconds
+	uint32_t interval; // how often the manager function will be called in RELOADTIME increments
 	uint32_t last; // last executed
 };
 typedef struct event_t eventType;
@@ -47,6 +51,14 @@ typedef struct event_t eventType;
 // functionality.
 // Inputs/Ouputs: none
 void Sys_Init(void);
+
+// ******* SysDelay *******
+// Initializes Systick timer and system management
+// functionality.
+// Inputs: number of timer cycles (as set in Systick_Init) to pause execution.
+//         Interrupts continue to function during this time.
+// Outputs: none
+void SysDelay(uint32_t delay);
 
 // ******* Sys_InitSema *******
 // Initialize a counting semaphore

@@ -18,7 +18,7 @@ fifo_t TestingFifo[1];
 int32_t TestingDMA;
 int32_t TestingSize;
 
-uint32_t TheTime = 0;
+volatile uint32_t TheTime = 0;
 
 eventType events[NUMEVENTS];
 
@@ -62,7 +62,7 @@ void static qrx_manager(fifo_t *fifo)
 
 void static test_event(void *foo)
 {
-	gpio_toggle(GPIOA, GPIO10); /* LED2 on/off */
+	gpio_toggle(GPIOA, GPIO10); /* LED2 on/off heartbeast */
 }
 
 void static dummy_event(void *foo)
@@ -79,11 +79,9 @@ void Sys_Init(void) {
 
 	// 48000000/1000 = 47999 overflows per second - every 1ms one interrupt
 	// SysTick interrupt every N clock pulses: set reload to N-1 
-	systick_set_reload(4799);
+	systick_set_reload(RELOADTIME);
 
 	systick_interrupt_enable();
-	// Start counting
-	systick_counter_enable();
 	Sys_InitSema(&SerTXDMA, 1);
 	Sys_InitSema(&SerTXSize, 0);
 	Sys_InitSema(&SerTXIRQ, 0);
@@ -99,12 +97,28 @@ void Sys_Init(void) {
 	Sys_AddPeriodicEvent(&qrx_manager, 1, SerRXFifo);
 	Sys_AddPeriodicEvent(&test_event, 1000, TestingFifo);
 	//Sys_AddPeriodicEvent(&dummy_event, 100000, &tmp, &tmp);
+
+	// Start counting
+	systick_counter_enable();
+	
 }
 
 void sys_tick_handler(void)
 {
 	run_periodic_events();
 	TheTime++;
+}
+
+// ******* SysDelay *******
+// Causes a delay to program execution.
+// Inputs: number of timer cycles (as set in Systick_Init) to block execution.
+//         Interrupts continue to fire during this time.
+// Outputs: none
+void SysDelay(uint32_t delay)
+{
+	uint32_t start;
+	start = TheTime;
+	while ((TheTime - start) < delay);
 }
 
 // ******* SysInitSema *******

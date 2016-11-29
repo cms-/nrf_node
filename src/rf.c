@@ -1,20 +1,22 @@
 #ifndef RF_H_
 #include "rf.h"
 #include "spi.h"
+#include "systick.h"
 #endif
 
-void rf_init(void) {
+void rf_init(rf_direction_e dir)
+{
 	rf_power_down();
 	spi_clear(CE);
 	spi_cs_high();
 	volatile int i;
-	for (i=0; i<100000; i++);
+	SysDelay(20);
 	
 	rf_write_reg_byte(NRF_REG_CONFIG, 0x08);
 	rf_write_reg_byte(NRF_REG_SETUP_RETR, 0x5F);
 	rf_clear_irq();
 	//rf_power_up();
-	for (i=0; i<100000; i++);
+	SysDelay(20);
 
 	//rf_write_reg_byte(NRF_REG_FEATURE, 0x06);
 	//rf_write_reg_byte(NRF_REG_DYNDP, 0x3f);
@@ -36,7 +38,7 @@ void rf_init(void) {
 	rf_write_reg_byte(NRF_REG_CONFIG, 0x0e);
 	//rf_write_reg_byte(NRF_REG_EN_RXADDR, 0x03);
 	rf_flush_all();
-	for (i=0; i<10000; i++);
+	SysDelay(20);
 }
 
 //Set receive pipe 0 address

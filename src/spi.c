@@ -14,7 +14,7 @@ void spi_begin() {
 
 void spi_end() {
 	spi_cs_high();
-	uart_send("\r\n", 2);
+	//UartSend("\r\n", 2);
 }
 
 void spi_transfer(void* in_buf, void* out_buf, int length) {
@@ -25,14 +25,13 @@ void spi_transfer(void* in_buf, void* out_buf, int length) {
 		int receive=0;
 		
 		if (send) {
-			/*
-			uart_send(" O ", 3);
-			for (j=0; j<10000; j++);
-			uart_send(&("0123456789ABCDEF"[send >> 4]),1);
-			for (j=0; j<10000; j++);
-			uart_send(&("0123456789ABCDEF"[send & 0xF]),1);
-			for (j=0; j<10000; j++);
-			*/
+			
+			UartSend(" O ", 3);
+			
+			UartSend(&("0123456789ABCDEF"[send >> 4]),1);
+			
+			UartSend(&("0123456789ABCDEF"[send & 0xF]),1);
+			
 		}
 		volatile int bit;
 		for (bit=0; bit<8; bit++) {
@@ -51,17 +50,12 @@ void spi_transfer(void* in_buf, void* out_buf, int length) {
 		
 		if (in_buf) {
 			((char*)in_buf)[i] = receive;
-			/*
-			uart_send(" I ", 3);
-			for (j=0; j<10000; j++);
-			uart_send(&("0123456789ABCDEF"[receive >> 4]),1);
-			for (j=0; j<10000; j++);
-			uart_send(&("0123456789ABCDEF"[receive & 0xF]),1);
-			for (j=0; j<10000; j++);
-			*/
+			
+			UartSend(" I ", 3);
+			UartSend(&("0123456789ABCDEF"[receive >> 4]),1);
+			UartSend(&("0123456789ABCDEF"[receive & 0xF]),1);			
 		}
 	}
-	for (j=0; j<100000; j++);
 }
 
 void spi_set(uint16_t spi_gpio) {

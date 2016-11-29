@@ -1,5 +1,6 @@
 #include "uart.h"
 #include "systick.h"
+#include "spi.h"
 
 // Uart_Send
 // Public function that sends a series of bytes
@@ -7,7 +8,7 @@
 // Inputs: pointer to a series of 8 bit values
 //         number of 8 bit values to be read from data pointer
 // Ouputs: none
-void Uart_send(volatile void* data, int length) {
+void UartSend(volatile void* data, int length) {
 	//while (!SerTXFifo->dma_flag);
 	FifoPut(data, SerTXFifo, length);
 
@@ -58,13 +59,14 @@ void rcc_init() {
 	rcc_clock_setup_in_hsi_out_48mhz();
 	rcc_periph_clock_enable(RCC_USART1);
 	rcc_periph_clock_enable(RCC_GPIOA);
+	rcc_periph_clock_enable(RCC_GPIOB);
 	rcc_periph_clock_enable(RCC_GPIOF);
 	//rcc_periph_clock_enable(RCC_AFIO);
 	rcc_periph_clock_enable(RCC_DMA);
 }
 
 void gpio_init() {
-	
+	// heartbeat led
 	gpio_mode_setup(GPIOA, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO10);
 
 	// Photores power blocking line & signal input
@@ -75,12 +77,14 @@ void gpio_init() {
 	gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO2);
 	gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO3);
 	gpio_set_af(GPIOA, GPIO_AF1, GPIO2|GPIO3);
-	/*
+	
 	// SPI software
-	gpio_mode_setup(SPI_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, CE|CSN|SCK|MOSI);
-	gpio_set_output_options(SPI_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, CE|CSN|SCK|MOSI);
+	gpio_mode_setup(SPI_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, CSN|SCK|MOSI);
+	gpio_set_output_options(SPI_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, CSN|SCK|MOSI);
+	gpio_mode_setup(CE_PORT, GPIO_MODE_OUTPUT, GPIO_PUPD_PULLUP, CE);
+	gpio_set_output_options(CE_PORT, GPIO_OTYPE_PP, GPIO_OSPEED_2MHZ, CE);
 	gpio_mode_setup(SPI_PORT, GPIO_MODE_INPUT, GPIO_PUPD_NONE, MISO);
-	*/
+
 }
 
 void uart_init() {

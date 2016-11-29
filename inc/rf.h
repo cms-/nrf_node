@@ -1,7 +1,7 @@
 #ifndef RF_H_
 #include <stdint.h>
 
-
+typedef enum { NRF_DIR_TX = 0, NRF_DIR_RX} rf_direction_e;
 typedef enum { NRF_DR_1MBPS = 0, NRF_DR_2MBPS, NRF_DR_250KBPS } rf_datarate_e;
 
 struct packet_header {
@@ -10,7 +10,7 @@ struct packet_header {
 	int data_length;
 };
 
-void rf_init(void);
+void rf_init(rf_direction_e dir);
 
 void rf_spi_command(char command);
 void rf_write_reg_byte(int reg, char value);
